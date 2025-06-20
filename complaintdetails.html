@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Complaint Form</title>
+  <style>
+    body { font-family: sans-serif; background-color: #cfd8dc; margin: 0; }
+    .navbar {
+      background-color: #37474f;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .navbar a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      background: #222;
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 500px;
+      margin: 30px auto;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    button {
+      background-color: green;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔗 Navigation bar -->
+  <div class="navbar">
+    <div id="greeting">Hi, User</div>
+    <div>
+      <a href="complaint.html">My Complaint</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>New Complaint Register</h2>
+    
+    <input type="text" id="name" placeholder="Name">
+    <input type="text" id="address" placeholder="Address">
+    <input type="text" id="city" placeholder="City">
+    <input type="text" id="state" placeholder="State">
+    <input type="text" id="pincode" placeholder="Pincode">
+    <input type="text" id="status" value="Pending" disabled>
+    <textarea id="description" placeholder="Description"></textarea>
+
+    <button onclick="submitComplaint()">Register</button>
+  </div>
+
+  <script>
+    const userEmail = localStorage.getItem("currentUser");
+    if (!userEmail) {
+      alert("Please login first");
+      window.location.href = "login.html";
+    }
+
+    const user = JSON.parse(localStorage.getItem(userEmail));
+    document.getElementById("greeting").innerText = `Hi, ${user.name}`;
+
+    function logout() {
+      localStorage.removeItem("currentUser");
+      window.location.href = "login.html";
+    }
+
+    function submitComplaint() {
+      const name = document.getElementById("name").value.trim();
+      const address = document.getElementById("address").value.trim();
+      const city = document.getElementById("city").value.trim();
+      const state = document.getElementById("state").value.trim();
+      const pincode = document.getElementById("pincode").value.trim();
+      const description = document.getElementById("description").value.trim();
+      const status = "Pending";
+
+      if (!name || !address || !city || !state || !pincode || !description) {
+        alert("Please fill all fields");
+        return;
+      }
+
+      const complaint = {
+        name, address, city, state, pincode, status, description, email: userEmail
+      };
+
+      let complaints = JSON.parse(localStorage.getItem("complaints")) || [];
+      complaints.push(complaint);
+      localStorage.setItem("complaints", JSON.stringify(complaints));
+
+      alert("Complaint submitted successfully!");
+      window.location.href = "complaint.html"; // 👈 Link to My Complaints
+    }
+  </script>
+
+</body>
+</html>

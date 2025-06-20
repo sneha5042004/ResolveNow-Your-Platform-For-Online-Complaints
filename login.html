@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <style>
+    body { background: #cfd8dc; font-family: sans-serif; }
+    .container { background: #222; color: white; padding: 30px; width: 300px; margin: 80px auto; border-radius: 8px; }
+    input, button { width: 100%; margin-top: 10px; padding: 8px; }
+    button { background: #007bff; color: white; border: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h3>Login For Registering the Complaint</h3>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+  </div>
+
+  <script>
+    function login() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!email || !password) {
+        alert("Both fields are required!");
+        return;
+      }
+
+      const userData = localStorage.getItem(email);
+
+      if (!userData) {
+        alert("No user registered with this email!");
+        return;
+      }
+
+      const user = JSON.parse(userData);
+
+      if (user.password !== password) {
+        alert("Password does not match!");
+        return;
+      }
+
+      localStorage.setItem("currentUser", email);
+      alert("Login successful!");
+window.location.href = "complaintdetails.html";
+    }
+  </script>
+</body>
+</html>

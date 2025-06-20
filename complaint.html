@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Complaints</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #eceff1;
+      margin: 0;
+      padding: 20px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    h2 {
+      color: #333;
+    }
+    .logout {
+      background-color: red;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .complaints {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+    .card p {
+      margin: 5px 0;
+    }
+    .status {
+      font-weight: bold;
+    }
+    .status.Pending {
+      color: orange;
+    }
+    .status.Solved {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h2>Your Registered Complaints</h2>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+
+  <div class="complaints" id="complaintList"></div>
+
+  <script>
+    const userEmail = localStorage.getItem("currentUser");
+    if (!userEmail) {
+      alert("Please login first");
+      window.location.href = "login.html";
+    }
+
+    const complaints = JSON.parse(localStorage.getItem("complaints")) || [];
+    const userComplaints = complaints.filter(c => c.email === userEmail);
+
+    const list = document.getElementById("complaintList");
+
+    if (userComplaints.length === 0) {
+      list.innerHTML = "<p>No complaints found.</p>";
+    } else {
+      userComplaints.forEach(c => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <p><strong>Name:</strong> ${c.name}</p>
+          <p><strong>Address:</strong> ${c.address}</p>
+          <p><strong>City:</strong> ${c.city}</p>
+          <p><strong>State:</strong> ${c.state}</p>
+          <p><strong>Pincode:</strong> ${c.pincode}</p>
+          <p><strong>Description:</strong> ${c.description}</p>
+          <p class="status ${c.status}"><strong>Status:</strong> ${c.status}</p>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function logout() {
+      localStorage.removeItem("currentUser");
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+</html>
+

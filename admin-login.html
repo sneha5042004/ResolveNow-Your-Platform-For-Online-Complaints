@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Login</title>
+  <style>
+    body { background-color: #eceff1; font-family: sans-serif; }
+    .container {
+      background: #263238; color: white;
+      padding: 30px; width: 300px; margin: 100px auto;
+      border-radius: 10px;
+    }
+    input, button {
+      width: 100%; padding: 10px; margin-top: 10px;
+    }
+    button {
+      background-color: #00acc1; color: white;
+      border: none; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Admin Login</h2>
+    <input type="text" id="adminUsername" placeholder="Username">
+    <input type="password" id="adminPassword" placeholder="Password">
+    <button onclick="adminLogin()">Login</button>
+  </div>
+<script>
+  function adminLogin() {
+    const username = document.getElementById("adminUsername").value.trim();
+    const password = document.getElementById("adminPassword").value.trim();
+
+    const userData = localStorage.getItem(username);
+    if (!userData) {
+      alert("Admin not found!");
+      return;
+    }
+
+    const user = JSON.parse(userData);
+    
+    if (user.role === "Admin" && user.password === password) {
+      localStorage.setItem("currentUser", username);
+      localStorage.setItem("currentRole", "Admin");
+      localStorage.setItem("adminLoggedIn", "true");
+      window.location.href = "view-complaints.html";
+    } else {
+      alert("Invalid admin credentials.");
+    }
+  }
+</script>
+
+  
+</body>
+</html>

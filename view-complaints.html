@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard - Complaints</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f8;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    .filter {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .filter select {
+      padding: 10px;
+      font-size: 16px;
+    }
+    .complaints {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    .card {
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      width: 300px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .card.solved {
+      border-left: 5px solid green;
+    }
+    .card.pending {
+      border-left: 5px solid orange;
+    }
+    .dropdown, .agent-dropdown, .message-box {
+      margin-top: 10px;
+      width: 100%;
+    }
+    select, textarea {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 5px;
+      margin-top: 5px;
+    }
+    .messages {
+      margin-top: 10px;
+      background-color: #f9f9f9;
+      padding: 10px;
+      border-radius: 5px;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+    .messages p {
+      font-size: 12px;
+      margin: 5px 0;
+    }
+    button {
+      margin-top: 5px;
+      padding: 8px 10px;
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>Admin - User Complaints</h2>
+  <div class="filter">
+    <label>Filter by Status: </label>
+    <select onchange="filterComplaints(this.value)">
+      <option value="All">All</option>
+      <option value="Pending">Pending</option>
+      <option value="Solved">Solved</option>
+    </select>
+  </div>
+  <div class="complaints" id="complaintContainer"></div>
+
+  <script>
+    let complaints = JSON.parse(localStorage.getItem("complaints")) || [];
+
+    function updateStatus(index, value) {
+      complaints[index].status = value;
+      localStorage.setItem("complaints", JSON.stringify(complaints));
+      renderComplaints();
+    }
+
+    function sendMessage(index) {
+      const input = document.getElementById(`msg-${index}`);
+      const message = input.value.trim();
+      if (!message) return;
+
+      if (!complaints[index].messages) complaints[index].messages = [];
+
+      const time = new Date().toLocaleTimeString();
+      complaints[index].messages.push(`Admin: ${message} (${time})`);
+
+      localStorage.setItem("complaints", JSON.stringify(complaints));
+      input.value = "";
+      renderComplaints();
+    }
+
+    function filterComplaints(status) {
+      renderComplaints(status);
+    }
+
+    function renderComplaints(filter = "All") {
+      const container = document.getElementById("complaintContainer");
+      container.innerHTML = "";
+
+      complaints.forEach((c, i) => {
+        if (filter !== "All" && c.status !== filter) return;
+
+        const card = document.createElement("div");
+        card.className = `card ${c.status.toLowerCase()}`;
+
+        card.innerHTML = `
+          <p><strong>Name:</strong> ${c.name}</p>
+          <p><strong>Address:</strong> ${c.address}</p>
+          <p><strong>City:</strong> ${c.city}</p>
+          <p><strong>State:</strong> ${c.state}</p>
+          <p><strong>Pincode:</strong> ${c.pincode}</p>
+          <p><strong>Comment:</strong> ${c.description}</p>
+          <p><strong>Status:</strong> ${c.status}</p>
+
+          <div class="dropdown">
+            <label>Change Status:</label>
+            <select onchange="updateStatus(${i}, this.value)">
+              <option value="Pending" ${c.status === 'Pending' ? 'selected' : ''}>Pending</option>
+              <option value="Solved" ${c.status === 'Solved' ? 'selected' : ''}>Solved</option>
+            </select>
+          </div>
+
+          <div class="message-box">
+            <label>Send Message:</label>
+            <textarea id="msg-${i}" placeholder="Type a message..."></textarea>
+            <button onclick="sendMessage(${i})">Send</button>
+            <div class="messages">
+              ${(c.messages || []).map(m => `<p>${m}</p>`).join('')}
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    renderComplaints();
+  </script>
+</body>
+</html>
